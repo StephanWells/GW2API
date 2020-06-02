@@ -1,12 +1,14 @@
-package util;
+package parsers;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import util.Defs;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,7 +21,7 @@ public class HtmlParser
      * @param url The URL to get the HTTP source from.
      * @param tag The HTML tag to look for, e.g. "textarea".
      * @return The text content within the <tag></tag> element.
-     * @throws IOException
+     * @throws IOException Thrown if the HTML page could not be read.
      */
     public static String returnTagContent(String url, String tag) throws IOException
     {
@@ -32,8 +34,16 @@ public class HtmlParser
     public static String apiReplacements(String text)
     {
         int[] ids = getIDsFromText(text);
+        String[] replacements = getStringsFromIds(ids, Defs.apiReplacements);
 
         return "";
+    }
+
+    private static String[] getStringsFromIds(int[] ids, Map<String, String> apiReplacements)
+    {
+        String[] replacements = new String[ids.length];
+
+        return replacements;
     }
 
     /**
