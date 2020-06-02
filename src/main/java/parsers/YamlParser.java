@@ -1,9 +1,8 @@
-package util;
+package parsers;
 
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.error.YAMLException;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 

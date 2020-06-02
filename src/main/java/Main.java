@@ -1,17 +1,24 @@
-import util.HtmlParser;
-
+import util.Defs;
+import parsers.HtmlParser;
 import java.io.IOException;
 import java.util.Scanner;
 
 public class Main
 {
-    public static final String tag = "textarea";
-
+    /**
+     * Main method.
+     * @param args
+     */
     public static void main(String[] args)
     {
-
+        Defs.init();
+        String text = getTextFromURL();
     }
 
+    /**
+     * Receives url from user as input and returns the text as the content of the tag global variable.
+     * @return The content inside the <tag></tag> elements, where tag is specified as a global variable.
+     */
     public static String getTextFromURL()
     {
         Scanner sc = new Scanner(System.in);
@@ -21,7 +28,7 @@ public class Main
 
         try
         {
-            text = HtmlParser.returnTagContent(url, tag);
+            text = HtmlParser.returnTagContent(url, Defs.tag);
         }
         catch (IOException e)
         {
@@ -30,4 +37,6 @@ public class Main
 
         return text;
     }
+
+
 }

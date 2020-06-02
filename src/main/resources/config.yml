@@ -1,2 +1,19 @@
-language: "es"
-tag: "textarea"
+settings:
+  language: "es"
+  tag: "textarea"
+  saveFile: "save.txt"
+  idKey: "id"
+  api:
+    baseUrl: "https://api.guildwars2.com/v2/"
+    resource: "items"
+    queryParameterKeys:
+      ids: "ids"
+      language: "lang"
+apiReplacements:
+  - name: "name"
+replacements:
+  - level: "nivel"
+  - prefix: "prefijo"
+  - name: "nombre"
+  - value: "valor"
+  - loot variant table row: "fila de tabla de variantes de botín"
