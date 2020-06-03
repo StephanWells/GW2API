@@ -3,10 +3,12 @@ package parsers;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import util.Api;
 import util.Defs;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -15,6 +17,7 @@ import java.util.regex.Pattern;
 public class HtmlParser
 {
     public static final String IDS_REGEX = Defs.idKey + "\\s*=\\s*([^|}\\n ]*)\\s*[|}]";
+    public static final String FIELD_REGEX_SUFFIX = "\\s*=\\s*([^|}\\n]*)\\s*[|}]";
 
     /**
      * Returns the content within the specified tag.
@@ -31,17 +34,55 @@ public class HtmlParser
        return text.text();
     }
 
-    public static String apiReplacements(String text)
+    public static String apiReplacements(String text) throws IOException, InterruptedException
     {
         int[] ids = getIDsFromText(text);
-        String[] replacements = getStringsFromIds(ids, Defs.apiReplacements);
+        List<Map<String, String>> replacements = getStringsFromIds(ids, Defs.apiReplacements);
+        String[] lines = text.split("\n");
+        String result = "";
+        Pattern idsPattern = Pattern.compile(IDS_REGEX);
+        Map<String, Pattern> regexPatterns = new LinkedHashMap<>();
+        int counter = 0;
 
-        return "";
+        for (Map.Entry<String, String> innerEntry : Defs.apiReplacements.entrySet())
+        {
+            regexPatterns.put(innerEntry.getKey(), Pattern.compile(innerEntry.getKey() + FIELD_REGEX_SUFFIX));
+        }
+
+        for (String line : lines)
+        {
+            Matcher idsMatcher = idsPattern.matcher(line);
+            String newLine = line;
+            StringBuffer replacement = new StringBuffer();
+
+            if (idsMatcher.find())
+            {
+                for (Map.Entry<String, String> innerEntry : Defs.apiReplacements.entrySet())
+                {
+                    Matcher fieldMatcher = regexPatterns.get(innerEntry.getKey()).matcher(newLine);
+                    fieldMatcher.find();
+                    fieldMatcher.appendReplacement(replacement,
+                            fieldMatcher.group(1).replaceFirst(Pattern.quote(fieldMatcher.group(1)),
+                                    innerEntry.getKey() + " = " + replacements.get(counter).get(innerEntry.getKey()) + " |"));
+                    fieldMatcher.appendTail(replacement);
+                    newLine = replacement.toString();
+                }
+
+                counter++;
+            }
+
+            result += newLine + System.lineSeparator();
+        }
+
+        return result;
     }
 
-    private static String[] getStringsFromIds(int[] ids, Map<String, String> apiReplacements)
+    private static List<Map<String, String>> getStringsFromIds(int[] ids, Map<String, String> apiReplacements) throws IOException, InterruptedException
     {
-        String[] replacements = new String[ids.length];
+        List<Map<String, String>> replacements;
+        Api gw2Api = new Api(Defs.baseUrl);
+        gw2Api.setLanguage(Defs.language);
+        replacements = gw2Api.getResourceFields(ids, apiReplacements);
 
         return replacements;
     }

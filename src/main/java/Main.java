@@ -1,6 +1,10 @@
-import util.Defs;
 import parsers.HtmlParser;
+import util.Defs;
+
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Main
@@ -13,6 +17,9 @@ public class Main
     {
         Defs.init();
         String text = getTextFromURL();
+        text = replaceTextWithApiReplacements(text);
+        text = replaceTextWithDirectReplacements(text);
+        writeTextToFile(text);
     }
 
     /**
@@ -38,5 +45,43 @@ public class Main
         return text;
     }
 
+    public static String replaceTextWithApiReplacements(String text)
+    {
+        try
+        {
+            text = HtmlParser.apiReplacements(text);
+        }
+        catch (IOException e)
+        {
+            System.out.println("IO Error: " + e.getMessage());
+        }
+        catch (InterruptedException e)
+        {
+            System.out.println("Connection Interrupted: " + e.getMessage());
+        }
 
+        return text;
+    }
+
+    private static String replaceTextWithDirectReplacements(String text)
+    {
+        for (Map.Entry<String, String> entry : Defs.replacements.entrySet())
+        {
+            text = text.replace(entry.getKey(), entry.getValue());
+        }
+
+        return text;
+    }
+
+    private static void writeTextToFile(String text)
+    {
+        try (PrintWriter out = new PrintWriter(Defs.saveFile))
+        {
+            out.println(text);
+        }
+        catch (FileNotFoundException e)
+        {
+            System.out.println("FileNotFound Error: " + e.getMessage());
+        }
+    }
 }
