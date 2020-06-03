@@ -3,6 +3,9 @@ package parsers;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.error.YAMLException;
 
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Map;
 
@@ -15,12 +18,12 @@ public class YamlParser
      * @return Returns an object that is either a String, boolean, or ArrayList<Map<String, String>>.
      * @throws YAMLException Thrown if the file is not found or can't be parsed into YAML.
      */
-    public static Object getProperty(String key) throws YAMLException
+    public static Object getProperty(String key) throws YAMLException, FileNotFoundException
     {
         String[] elements = key.split("\\.");
 
         Yaml yaml = new Yaml();
-        InputStream is = YamlParser.class.getClassLoader().getResourceAsStream("config.yml");
+        InputStream is = new BufferedInputStream(new FileInputStream("config.yml"));
         Map<String, Object> yamlProps = yaml.load(is);
         Object value = yamlProps.get(elements[0]);
 

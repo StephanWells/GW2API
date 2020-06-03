@@ -3,6 +3,7 @@ package util;
 import org.yaml.snakeyaml.error.YAMLException;
 import parsers.YamlParser;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -42,6 +43,10 @@ public class Defs
         catch (YAMLException e)
         {
             System.out.println("Error reading YAML config data! " + e.getMessage());
+        }
+        catch (FileNotFoundException e)
+        {
+            System.out.println("Error: cannot find config.yml! " + e.getMessage());
         }
     }
 
